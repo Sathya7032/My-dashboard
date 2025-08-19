@@ -1,4 +1,4 @@
-package com.mydashboard.service.impl;
+package com.mydashboard.serviceimpl;
 
 import com.mydashboard.entity.Wallet;
 
