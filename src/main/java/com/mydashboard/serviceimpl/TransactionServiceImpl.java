@@ -36,11 +36,13 @@ public class TransactionServiceImpl implements TransactionService {
                 throw new InvalidWalletOperationException("Insufficient cash in hand for this transaction.");
             }
             wallet.setCashInHand(wallet.getCashInHand().subtract(transaction.getAmount()));
+            wallet.setCurrentBalance(wallet.getCashInAccount().add(wallet.getCashInHand()));
         } else if (transaction.getPaymentType() == PaymentType.ONLINE) {
             if (wallet.getCashInAccount().compareTo(transaction.getAmount()) < 0) {
                 throw new InvalidWalletOperationException("Insufficient cash in account for this transaction.");
             }
             wallet.setCashInAccount(wallet.getCashInAccount().subtract(transaction.getAmount()));
+            wallet.setCurrentBalance(wallet.getCashInAccount().add(wallet.getCashInHand()));
         }
 
         transaction.setWallet(wallet);
@@ -66,12 +68,17 @@ public class TransactionServiceImpl implements TransactionService {
             if (wallet.getCashInHand().compareTo(transaction.getAmount()) < 0) {
                 throw new InvalidWalletOperationException("Insufficient cash in hand for this transaction.");
             }
+            wallet.setCashInAccount(wallet.getCashInAccount().add(transaction.getAmount()));
             wallet.setCashInHand(wallet.getCashInHand().subtract(transaction.getAmount()));
+            wallet.setCurrentBalance(wallet.getCashInAccount().add(wallet.getCashInHand()));
         } else if (transaction.getPaymentType() == PaymentType.ONLINE) {
             if (wallet.getCashInAccount().compareTo(transaction.getAmount()) < 0) {
                 throw new InvalidWalletOperationException("Insufficient cash in account for this transaction.");
             }
+
+            wallet.setCashInHand(wallet.getCashInHand().add(transaction.getAmount()));
             wallet.setCashInAccount(wallet.getCashInAccount().subtract(transaction.getAmount()));
+            wallet.setCurrentBalance(wallet.getCashInAccount().add(wallet.getCashInHand()));
         }
 
         transaction.setWallet(wallet);
