@@ -106,6 +106,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<finalName>My-dashboard</finalName>
 	</build>
 
 </project>
