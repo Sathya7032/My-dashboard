@@ -4,7 +4,6 @@ package com.mydashboard.controller;
 import com.mydashboard.entity.EmailDetails;
 import com.mydashboard.service.EmailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
