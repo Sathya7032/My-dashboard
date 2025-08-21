@@ -1,5 +1,6 @@
 package com.mydashboard.controller;
 
+import com.mydashboard.dto.JavaApplicationEditDto;
 import com.mydashboard.dto.JobApplicationDto;
 import com.mydashboard.entity.JobApplication;
 import com.mydashboard.service.JobApplicationService;
@@ -44,10 +45,9 @@ public class JobApplicationController {
     @PutMapping("/{id}")
     public ResponseEntity<JobApplication> updateJobApplication(
             @PathVariable Long id,
-            @RequestPart("jobApplication") JobApplication jobApplication,
-            @RequestPart(value = "resume", required = false) MultipartFile resume
-    ) throws IOException {
-        JobApplication updated = jobApplicationService.updateJobApplication(id, jobApplication, resume);
+            @ModelAttribute JavaApplicationEditDto javaApplicationEditDto
+            ) throws IOException {
+        JobApplication updated = jobApplicationService.updateJobApplication(id,javaApplicationEditDto);
         return ResponseEntity.ok(updated);
     }
 

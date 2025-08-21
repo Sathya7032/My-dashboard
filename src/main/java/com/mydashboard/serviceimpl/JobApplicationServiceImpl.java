@@ -1,6 +1,7 @@
 package com.mydashboard.serviceimpl;
 
 import com.mydashboard.aws.S3FileUploadService;
+import com.mydashboard.dto.JavaApplicationEditDto;
 import com.mydashboard.dto.JobApplicationDto;
 import com.mydashboard.entity.JobApplication;
 import com.mydashboard.repo.JobApplicationRepository;
@@ -58,31 +59,33 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     }
 
     @Override
-    public JobApplication updateJobApplication(Long id, JobApplication updatedJobApplication, MultipartFile resume) throws IOException {
+    public JobApplication updateJobApplication(Long id, JavaApplicationEditDto javaApplicationEditDto) throws IOException {
         return jobApplicationRepository.findById(id).map(existing -> {
-            existing.setCompanyName(updatedJobApplication.getCompanyName());
-            existing.setCompanyWebsite(updatedJobApplication.getCompanyWebsite());
-            existing.setCompanyLocation(updatedJobApplication.getCompanyLocation());
-            existing.setJobTitle(updatedJobApplication.getJobTitle());
-            existing.setJobRole(updatedJobApplication.getJobRole());
-            existing.setJobDescriptionLink(updatedJobApplication.getJobDescriptionLink());
-            existing.setDateApplied(updatedJobApplication.getDateApplied());
-            existing.setResumeEditedForJob(updatedJobApplication.getResumeEditedForJob());
-            existing.setReferencePersons(updatedJobApplication.getReferencePersons());
-            existing.setReferenceEmails(updatedJobApplication.getReferenceEmails());
-            existing.setReferenceReplies(updatedJobApplication.getReferenceReplies());
-            existing.setApplicationStatus(updatedJobApplication.getApplicationStatus());
-            existing.setResponseDate(updatedJobApplication.getResponseDate());
-            existing.setNotes(updatedJobApplication.getNotes());
+            existing.setCompanyName(javaApplicationEditDto.getCompanyName());
+            existing.setCompanyWebsite(javaApplicationEditDto.getCompanyWebsite());
+            existing.setCompanyLocation(javaApplicationEditDto.getCompanyLocation());
+            existing.setJobTitle(javaApplicationEditDto.getJobTitle());
+            existing.setJobRole(javaApplicationEditDto.getJobRole());
+            existing.setJobDescriptionLink(javaApplicationEditDto.getJobDescriptionLink());
+            existing.setDateApplied(javaApplicationEditDto.getDateApplied());
+            existing.setResumeEditedForJob(javaApplicationEditDto.getResumeEditedForJob());
+            existing.setReferencePersons(javaApplicationEditDto.getReferencePersons());
+            existing.setReferenceEmails(javaApplicationEditDto.getReferenceEmails());
+            existing.setReferenceReplies(javaApplicationEditDto.getReferenceReplies());
+            existing.setApplicationStatus(javaApplicationEditDto.getApplicationStatus());
+            existing.setResponseDate(javaApplicationEditDto.getResponseDate());
+            existing.setNotes(javaApplicationEditDto.getNotes());
 
-            if (resume != null && !resume.isEmpty()) {
+            // File upload to S3
+            if (javaApplicationEditDto.getResumeS3Url() != null && !javaApplicationEditDto.getResumeS3Url().isEmpty()) {
+                String fileName = "resume_" + UUID.randomUUID() + "_" +  javaApplicationEditDto.getResumeS3Url().getOriginalFilename();
+                String s3Url = null;
                 try {
-                    String fileName = UUID.randomUUID() + "_" + resume.getOriginalFilename();
-                    String s3Url = s3FileUploadService.uploadFile("resumes", resume, fileName);
-                    existing.setResumeS3Url(s3Url);
+                    s3Url = s3FileUploadService.uploadFile("resumes", javaApplicationEditDto.getResumeS3Url(), fileName);
                 } catch (IOException e) {
-                    throw new RuntimeException("Failed to upload resume", e);
+                    throw new RuntimeException(e);
                 }
+                existing.setResumeS3Url(s3Url);
             }
 
             return jobApplicationRepository.save(existing);
